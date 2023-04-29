@@ -1,0 +1,31 @@
+{
+  "hosting": {
+  "public": "dist",
+  "headers": [
+  {
+    "source": "**/*.@(js|jsx)",
+    "headers": [
+      {
+        "key": "Content-Type",
+        "value": "application/javascript"
+      }
+    ]
+  },
+  {
+    "source": "**/*.@(ts|tsx)",
+    "headers": [
+      {
+        "key": "Content-Type",
+        "value": "application/typescript"
+      }
+    ]
+  }
+],
+  "ignore": [
+    "firebase.json",
+    "**/.*",
+    "**/node_modules/**"
+  ]
+}
+
+}
