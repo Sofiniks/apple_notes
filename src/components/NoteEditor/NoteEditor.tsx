@@ -1,6 +1,8 @@
 import React from 'react';
 import useNotes from '../../hooks/useNotes';
 import { useParams } from 'react-router-dom';
+import { Box, Input } from '@mui/material';
+import TextField from '@mui/material/TextField';
 
 const NoteEditor: React.FC = () => {
     const {id} = useParams();
@@ -12,14 +14,20 @@ const NoteEditor: React.FC = () => {
     const handleChange = (field: string, text: string) => {
         editNote({...activeNote, [field]: text})
     }
-    console.log('Note', note);
        return (
-  <div>
-    
-    <input value={note?.title} onChange={(e) => handleChange("title", e.target.value)}/>
-    <textarea value={note?.content} onChange={(e) => handleChange("content", e.target.value)}/>
-    
-  </div>);  
+  <Box sx={{display: 'flex', flexDirection: 'column'}}>
+    <TextField 
+    value={note.title} 
+    onChange={(e) => handleChange("title", e.target.value)} 
+    sx={{ "& fieldset": {border: 'none'}}} 
+    autoFocus
+    />
+    <TextField 
+    value={note.content} 
+    onChange={(e) => handleChange("content", e.target.value)} 
+    sx={{ "& fieldset": {border: 'none'}}} 
+    />
+  </Box>);  
  
 };
 

@@ -1,27 +1,35 @@
 import { useState, useContext } from 'react';
 import { AuthContext } from '../context/AuthContext';
+import Auth from '../components/Auth/Auth';
+import { handleErrorMessages } from '../utils/helpers';
 
-const Login: React.FC = () => {
+interface Props {
+  isRegister?: boolean
+}
+const Login: React.FC<Props> = ({ isRegister = false }) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [error, setError] = useState('');
+  const [regEmail, setRegEmail] = useState('');
+  const [regPassword, setRegPassword] = useState('');
   const { signIn, signInWithGoogle, signUp } = useContext(AuthContext);
+
 
   const handleLoginWithEmail = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
       await signIn(email, password);
-    } catch (error) {
-      console.error(error);
+    } catch (error: any) {
+    setError(handleErrorMessages(error))
     }
   };
 
   const handleSignUpWithEmail = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      const res = await signUp(email, password);
-      console.log('res', res);
-    } catch (error) {
-      console.error(error);
+      await signUp(email, password);
+    } catch (error: any) {
+      setError(handleErrorMessages(error))
     }
   };
 
@@ -33,37 +41,31 @@ const Login: React.FC = () => {
     }
   };
 
-  return (
-    <div>
-      <h2>Login</h2>
-      <form onSubmit={handleLoginWithEmail}>
-        <label>
-          Email:
-          <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} />
-        </label>
-        <label>
-          Password:
-          <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} />
-        </label>
-        <button type="submit">Sign In</button>
-      </form>
-      <button onClick={handleLoginWithGoogle}>Sign in with Google</button>
-      <div>
-        <h2>Sign Up</h2>
-        <form onSubmit={handleSignUpWithEmail}>
-        <label>
-          Email:
-          <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} />
-        </label>
-        <label>
-          Password:
-          <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} />
-        </label>
-        <button type="submit">Sign In</button>
-      </form>
-      </div>
-    </div>
-  );
+  if(isRegister) {
+    return (
+      <Auth 
+        email={regEmail} 
+        password={regPassword} 
+        setEmail={setRegEmail} 
+        setPassword={setRegPassword} 
+        onSubmit={handleSignUpWithEmail} 
+        isRegister 
+        errorMessage={error}
+      />
+    )
+  } else {
+    
+    return (
+      <Auth 
+        email={email} 
+        password={password} 
+        setEmail={setEmail} 
+        setPassword={setPassword} 
+        onSubmit={handleLoginWithEmail} 
+        errorMessage={error}
+      />
+    )
+  }
 };
 
 export default Login;

@@ -12,38 +12,15 @@ body {
     font-family: 'Roboto', sans-serif;
     font-size: 16px;
     line-height: 1.5;
+    color: '#fff'
 }
 
-/* Basic button styles */
-button {
-    font-family: inherit;
-    font-size: inherit;
-    border: none;
-    padding: 0.5rem 1rem;
-    border-radius: 0.25rem;
-    background-color: #007aff;
-    color: #fff;
-    cursor: pointer;
-    transition: background-color 0.2s ease;
-}
-
-button:hover {
-    background-color: #0051ad;
+a {
+    color: 'black'
 }
 
 /* Form input styles */
 input[type='text'],
 input[type='password'] {
-    font-family: inherit;
-    font-size: inherit;
-    padding: 0.5rem;
-    border: 1px solid #d4d4d4;
-    border-radius: 0.25rem;
-    transition: border-color 0.2s ease;
-}
-
-input[type='text']:focus,
-input[type='password']:focus {
-    outline: none;
-    border-color: #007aff;
+    border: none;
 }

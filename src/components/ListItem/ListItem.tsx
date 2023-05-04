@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { Typography } from '@mui/material';
+import { Box, Typography, Divider } from '@mui/material';
 import { Delete } from '@mui/icons-material';
 
 import { useNotes } from '../../hooks/useNotes';
@@ -19,13 +19,20 @@ const ListItem: React.FC<Props> = ({ note, onClick }) => {
   };
 
   return (
-    <div>
-      <Link to={`/notes/${note.id}`} style={{ textDecoration: 'none' }}>
-       <button onClick={onClick}><Typography variant="h6">{note.title}</Typography></button> 
-        <button onClick={onClick}><Typography variant="body1">{note.content}</Typography></button>
-      </Link>
-      <Delete onClick={handleDeleteNote} />
-    </div>
+    <Box sx={{mb: '15px'}}>
+       <Box onClick={onClick} sx={{display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: '10px'}}>
+          <Link to={`/${note.id}`} style={{ textDecoration: 'none', color: '#000000', fontWeight: '700' }}>
+            {note.title}
+          </Link>
+          <Delete onClick={handleDeleteNote} />
+        </Box> 
+        <Box onClick={onClick} sx={{padding: '10px 0'}}>
+          <Link to={`/${note.id}`} style={{ textDecoration: 'none', color: '#000000' }}>
+            <Typography variant="body1">{note.content}</Typography>
+          </Link>
+        </Box> 
+        <Divider/>
+    </Box>
   );
 };
 

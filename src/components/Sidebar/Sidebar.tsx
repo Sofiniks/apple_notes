@@ -1,5 +1,7 @@
 import React from 'react';
-import { Box, List, Toolbar, Typography } from '@mui/material';
+import { Box, Button, List, Typography } from '@mui/material';
+import CreateOutlinedIcon from '@mui/icons-material/CreateOutlined';
+import AddOutlinedIcon from '@mui/icons-material/AddOutlined';
 import {  useNavigate } from 'react-router-dom';
 
 import { useNotes } from '../../hooks/useNotes';
@@ -12,17 +14,30 @@ const Sidebar: React.FC = () => {
 
   const handleAddNote = () => {
     addNote();
-    navigate('/notes/create');
+    navigate('/create');
   }
   return (
     <>
-      <Toolbar />
       <Box>
-        <Typography>
+        <Box sx={{
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          mb: '15px'
+        }}>
+          <Typography component='h1' sx={{fontSize: '18px'}}>
           Notes
         </Typography>
-        <button onClick={handleAddNote}>Add new</button>
-        <List sx={{ ml: 2, mt: 2 }}>
+        <Button 
+        startIcon={<AddOutlinedIcon/>} sx={{
+          fontSize: '12px'
+        }}
+        onClick={handleAddNote}
+        >Add new</Button>
+        </Box>
+        
+        {/* <button onClick={handleAddNote}>Add new</button> */}
+        <List>
           {notes.map((note: Note) => (
             <ListItem key={note.id} note={note} onClick={() => setActiveNote(String(note.id))}/>
           ))}

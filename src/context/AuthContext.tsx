@@ -50,7 +50,7 @@ export const AuthProvider: React.FC<any> = ({ children }) => {
    const res =  await signInWithEmailAndPassword(auth, email, password);
    setUser(res.user);
    if(res.user) {
-    navigate('/notes');
+    navigate('/');
    }
    
   };
