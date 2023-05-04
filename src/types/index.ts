@@ -1,30 +1,25 @@
-export interface Note {
-  id?: string;
-  title?: string;
-  content?: string;
-  created_at?: string;
-  updated_at?: string;
-}
 
-export interface User {
-  uid: string;
-  email: string;
-  displayName?: string;
-  photoURL?: string;
+export interface Note {
+	id: string;
+	userId: string;
+	title?: string;
+	content?: string;
+	updated_at: Date | string;
 }
 
 export type NotesContextType = {
   notes: Note[];
-  activeNote: string | null;
-  setActiveNote: (id: string) => void;
+  activeNote: string | null | Note;
+  setActiveNote: (id: string | null) => void;
   getActiveNote: () => Note | null | undefined;
-  addNote: () => void;
+  addNote: (note: Note) => void;
   editNote: (note: Note) => void;
   deleteNote: (id: string) => void;
+  setNotes: (notes: Note[]) => void;
 };
 
 export type AuthContextType = {
-  user: User | null;
+  user: string | null;
   signIn: (email: string, password: string) => Promise<void>;
   signOut: () => Promise<void>;
 };

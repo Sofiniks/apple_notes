@@ -1,16 +1,13 @@
-import { Navigate, useLocation } from 'react-router-dom';
-import { useAuth } from '../../hooks/useAuth';
+import { Navigate, useLocation } from "react-router-dom";
+import { useAuth } from "../../hooks/useAuth";
+import React from "react";
 
-interface PrivateRouteProps {
-  children: React.ReactNode | any;
-}
+export function PrivateRoute({ children } : {children: React.ReactNode}) {
+	const location = useLocation();
 
-export function PrivateRoute({children}: PrivateRouteProps) {
-    const location = useLocation();
-
-    const {user} = useAuth();
-    if(user === null) {
-        return <Navigate to="/login" state={{from: location.pathname}} replace/>
-    }
-    return children
+	const { user } = useAuth();
+	if (user === null) {
+		return <Navigate to='/login' state={{ from: location.pathname }} replace />;
+	}
+	return <>{children}</>;
 }

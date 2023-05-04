@@ -1,79 +1,82 @@
-import { createContext, useEffect, useState } from "react";
+import { createContext, useEffect, useState, ReactNode } from "react";
 import {
-  getAuth,
-  createUserWithEmailAndPassword,
-  signInWithEmailAndPassword,
-  signInWithPopup,
-  GoogleAuthProvider,
-  onAuthStateChanged,
+	getAuth,
+	createUserWithEmailAndPassword,
+	signInWithEmailAndPassword,
+	onAuthStateChanged,
 } from "firebase/auth";
-import { auth, db } from "../utils/firebase";
+import { auth } from "../utils/firebase";
 import { useNavigate } from "react-router-dom";
 
 interface AuthContextType {
-  user: any | null;
-  signInWithGoogle: () => Promise<void>;
-  signUp: (email: string, password: string) => Promise<void>;
-  signIn: (email: string, password: string) => Promise<void>;
-  signOut: () => Promise<void>;
+	user: string | null;
+	userId: string | null;
+	signUp: (email: string, password: string) => Promise<void>;
+	signIn: (email: string, password: string) => Promise<void>;
+	signOut: () => Promise<void>;
 }
 
 export const AuthContext = createContext<AuthContextType>({
-  user: null,
-  signInWithGoogle: () => Promise.resolve(),
-  signUp: (email: string, password: string) => Promise.resolve(),
-  signIn: (email: string, password: string) => Promise.resolve(),
-  signOut: () => Promise.resolve(),
+	user: null,
+	userId: null,
+	signUp: (email: string, password: string) => {
+		console.log(email, password);
+		return Promise.resolve();
+	},
+	signIn: (email: string, password: string) => {
+		console.log(email, password);
+		return Promise.resolve();
+	},
+	signOut: () => Promise.resolve(),
 });
 
-export const AuthProvider: React.FC<any> = ({ children }) => {
-  const [user, setUser] = useState<any | null>(null);
-  const  navigate = useNavigate();
+export const AuthProvider: React.FC<{ children: ReactNode }> = ({
+	children,
+}) => {
+	const [user, setUser] = useState(() => localStorage.getItem("user"));
+	const [userId, setUserId] = useState(() => localStorage.getItem("userId"));
+	const navigate = useNavigate();
 
-  useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
-      setUser(user);
-    });
-    return unsubscribe;
-  }, []);
+	useEffect(() => {
+		const unsubscribe = onAuthStateChanged(auth, () => {
+			setUser(() => localStorage.getItem("user"));
+		});
+		return unsubscribe;
+	}, []);
 
-  const signInWithGoogle = async () => {
-    const provider = new GoogleAuthProvider();
-    await signInWithPopup(auth, provider);
-  };
+	const signUp = async (email: string, password: string) => {
+		await createUserWithEmailAndPassword(auth, email, password);
+	};
 
-  const signUp = async (email: string, password: string) => {
-    await createUserWithEmailAndPassword(auth, email, password);
-  };
+	const signIn = async (email: string, password: string) => {
+		const res = await signInWithEmailAndPassword(auth, email, password);
+		setUser(email);
+		setUserId(res.user.uid);
+		localStorage.setItem("user", email);
+		localStorage.setItem("userId", res.user.uid);
 
-  const signIn = async (email: string, password: string) => {
-   const res =  await signInWithEmailAndPassword(auth, email, password);
-   setUser(res.user);
-   if(res.user) {
-    navigate('/');
-   }
-   
-  };
+		if (res.user) {
+			navigate("/");
+		}
+	};
 
-  const signOut = async () => {
-    await getAuth().signOut();
-  };
+	const signOut = async () => {
+		await getAuth().signOut();
+		setUser(null);
+		setUserId(null);
+		localStorage.removeItem("user");
+		localStorage.removeItem("userId");
+	};
 
-  const contextValue: AuthContextType = {
-    user,
-    signInWithGoogle,
-    signUp,
-    signIn,
-    signOut,
-  };
+	const contextValue: AuthContextType = {
+		user,
+		userId,
+		signUp,
+		signIn,
+		signOut,
+	};
 
-  return (
-    <AuthContext.Provider value={contextValue}>
-      {children}
-    </AuthContext.Provider>
-  );
+	return (
+		<AuthContext.Provider value={contextValue}>{children}</AuthContext.Provider>
+	);
 };
-
-
-
-

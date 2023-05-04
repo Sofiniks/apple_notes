@@ -1,16 +1,19 @@
-import React, { createContext, useState } from "react";
-import uuid from "react-uuid";
+import React, { createContext, useState, useEffect } from "react";
+import { collection, addDoc, deleteDoc, doc, updateDoc, where, onSnapshot, query } from "@firebase/firestore";
+import { db } from "../utils/firebase";
 import { Note, NotesContextType } from "../types";
-import { notes as mocks} from "../data/mocks";
+import { useNavigate } from "react-router-dom";
+import useAuth from "../hooks/useAuth";
 
 export const NotesContext = createContext<NotesContextType>({
   notes: [],
   activeNote: null,
-  setActiveNote: (id: string) => console.log(`active note: ${id}`),
+  setActiveNote: (id: string | null) => console.log(`active note: ${id}`),
   getActiveNote: () => null,
-  addNote: () => console.log(`adding empty note`),
+  addNote: (note: Note) => console.log(`Adding note: ${note}`),
   editNote: (note: Note) => console.log(`edited note: ${note}`),
   deleteNote: (id: string) => console.log(`deleting note with id: ${id}`),
+  setNotes: (notes: Note[]) => console.log('Set notes: ', notes)
 });
 
 interface Props {
@@ -18,39 +21,73 @@ interface Props {
 }
 
 export const NotesProvider: React.FC<Props> = ({ children }) => {
-  const [notes, setNotes] = useState<Note[]>([...mocks]);
+  const [notes, setNotes] = useState<Note[]>([]);
   const [activeNote, setActiveNote] = useState<string | null>(null);
+  const {userId} = useAuth();
+  const  navigate = useNavigate();
+
+useEffect(() => {
+    if (userId) {
+      const notesCollection = collection(db, 'notes');
+      const notesQuery = query(notesCollection, where('userId', '==', userId));
+      const unsubscribe = onSnapshot(notesQuery, (snapshot: any) => {
+        const notesData = snapshot.docs.map((doc: any) => ({
+          id: doc.id,
+          ...doc.data(),
+        })) as Note[];
+        setNotes(notesData);
+      });
+      return () => unsubscribe();
+    }
+  }, [userId]);
 
   const getActiveNote = () => {
     return notes.find(({ id }) => id === activeNote);
   };
 
-  const addNote = () => {
-    const newNote = {
-      id: uuid(),
-      title: "",
-      content: "",
-      lastModified: Date.now(),
-    };
+  const addNote = async (note: Note) => {
+  try {
+     await addDoc(collection(db, 'notes'), note);
+    setNotes((prevNotes) => [note, ...prevNotes]);
+    setActiveNote(note.id)
+    navigate(`/${note.id}`)
+  } catch (err) {
+    console.error('Error adding document: ', err);
+  }
+};
 
-    setNotes([newNote, ...notes]);
-    setActiveNote(newNote.id);
-  };
+  const editNote = async (editedNote: Note) => {
+    const noteRef = doc(db, 'notes', String(editedNote.id));
 
-  const editNote = (editedNote: Note) => {
-    const newNotes = notes.map((note) => {
-      if (note.id === editedNote.id) {
-        return editedNote;
-      }
-
-      return note;
+    try {
+      await updateDoc(noteRef, {
+      title: editedNote?.title,
+      content: editedNote?.content,
+      updated_at: Date.now(),
+      userId: editedNote?.userId
     });
-
-    setNotes(newNotes);
+      setNotes((prevNotes) => {
+        const updatedNotes = prevNotes.map((note) => {
+          if(note.id === editedNote.id) {
+            return {...note, ...editedNote}
+          }
+          return note
+        });
+        return updatedNotes
+      })
+    }catch(e) {
+      console.log('Error adding document: ', e)
+    }
   }
 
-  const deleteNote = (id: string) => {
-    setNotes(notes.filter((note) => note.id !== id));
+  const deleteNote = async (id: string) => {
+    try {
+      await deleteDoc(doc(db, "notes", id))
+      setNotes(notes.filter((note) => note.id !== id));
+    }catch(e) {
+      console.log('Error deleting document: ', e)
+    }
+    
   };
 
   const contextValue: NotesContextType = {
@@ -61,6 +98,7 @@ export const NotesProvider: React.FC<Props> = ({ children }) => {
     addNote,
     editNote,
     deleteNote,
+    setNotes
   };
 
   return (

@@ -16,7 +16,7 @@ const App: React.FC = () => {
           <Route path="/register" element={<LoginPage isRegister/>} />
           <Route path="/" element={<PrivateRoute><MainPage /></PrivateRoute>} />
          <Route path="/:id" element={<PrivateRoute><MainPage /></PrivateRoute>} />
-         <Route path="/create" element={<PrivateRoute><MainPage /></PrivateRoute>} />
+         <Route path="/edit" element={<PrivateRoute><MainPage/></PrivateRoute>} />
         </Routes>
       </AuthProvider>
     </NotesProvider>

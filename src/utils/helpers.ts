@@ -22,3 +22,13 @@ export const handleErrorMessages = (error: any) => {
     }
     return errorMessage;
   }
+
+  type AddPrefixToKeys<P extends string, T> = { [K in keyof T as `${P}.${string & K}`]: T[K] };
+
+export function addPrefixToKeys<P extends string, T>(prefix: P, obj: T): AddPrefixToKeys<P, T> {
+  const newObj = {} as AddPrefixToKeys<P, T>;
+  for (const key in obj) {
+    newObj[`${prefix}.${key}` as keyof AddPrefixToKeys<P, T>] = obj[key] as any;
+  }
+  return newObj;
+}
