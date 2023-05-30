@@ -1,5 +1,11 @@
 import { useContext, useState } from "react";
-import { getDocs, collection, query, where } from "@firebase/firestore";
+import {
+	getDocs,
+	collection,
+	query,
+	where,
+	orderBy,
+} from "@firebase/firestore";
 import { NotesContext } from "../context/NotesContext";
 import { db } from "../utils/firebase";
 import { Note } from "../types";
@@ -21,7 +27,11 @@ export const useNotes = () => {
 		setLoading(true);
 		try {
 			const querySnapshot = await getDocs(
-				query(collection(db, "notes"), where("userId", "==", userId))
+				query(
+					collection(db, "notes"),
+					orderBy("updated_at", "desc"),
+					where("userId", "==", userId)
+				)
 			);
 			const fetchedNotes = querySnapshot.docs.map((doc) => {
 				return { ...doc.data(), id: doc.id };

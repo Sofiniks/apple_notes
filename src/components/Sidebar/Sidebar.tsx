@@ -8,7 +8,7 @@ import useAuth from "../../hooks/useAuth";
 import ListItem from "../ListItem/ListItem";
 
 const Sidebar: React.FC = () => {
-	const { setActiveNote, notes, fetchNotes } = useNotes();
+	const { setActiveNote, notes, fetchNotes, getActiveNote } = useNotes();
 	const { signOut, userId } = useAuth();
 	const navigate = useNavigate();
 	const [searchQuery, setSearchQuery] = useState("");
@@ -36,6 +36,8 @@ const Sidebar: React.FC = () => {
 			note?.title?.toLowerCase().includes(searchQuery.toLowerCase()) ||
 			note?.content?.toLowerCase().includes(searchQuery.toLowerCase())
 	);
+
+	const active = getActiveNote() || notes[0];
 
 	return (
 		<>
@@ -105,6 +107,7 @@ const Sidebar: React.FC = () => {
 							<ListItem
 								key={note.id}
 								note={note}
+								activeNote={active}
 								onClick={() => handleNoteClick(String(note.id))}
 							/>
 						))}

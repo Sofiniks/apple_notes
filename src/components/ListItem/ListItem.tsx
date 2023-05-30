@@ -5,12 +5,25 @@ import { Note } from "../../types";
 
 interface Props {
 	note: Note;
+	activeNote?: Note | null;
 	onClick: () => void;
 }
 
-const ListItem: React.FC<Props> = ({ note, onClick }) => {
+const ListItem: React.FC<Props> = ({ note, onClick, activeNote }) => {
+	const currentNote = note === activeNote;
 	return (
-		<Box sx={{ mb: "15px", cursor: "pointer" }} onClick={onClick}>
+		<Box
+			sx={{
+				mb: "15px",
+				cursor: "pointer",
+				backgroundColor: currentNote ? "#f7d488" : "undefined",
+				transition: "all .3s",
+				"&:hover": {
+					backgroundColor: "#f7d488",
+				},
+			}}
+			onClick={onClick}
+		>
 			<Box
 				sx={{
 					display: "flex",

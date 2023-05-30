@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import uuid from "react-uuid";
-import { Box } from "@mui/material";
+import { Box, Button } from "@mui/material";
 import TextField from "@mui/material/TextField";
 import useNotes from "../../hooks/useNotes";
 import useAuth from "../../hooks/useAuth";
@@ -12,7 +12,7 @@ interface Props {
 
 const NoteEditor: React.FC<Props> = ({ setIsEditable }) => {
 	const { userId } = useAuth();
-	const { editNote, getActiveNote, fetchNotes, addNote, activeNote, notes } =
+	const { editNote, getActiveNote, fetchNotes, addNote, activeNote } =
 		useNotes();
 	const [currentNote, setCurrentNote] = useState<Note>({
 		id: "",
@@ -30,7 +30,7 @@ const NoteEditor: React.FC<Props> = ({ setIsEditable }) => {
 
 	useEffect(() => {
 		const active = getActiveNote();
-    const currentActiveNote = active || notes[0];
+		const currentActiveNote = active;
 		if (currentActiveNote) {
 			setCurrentNote({
 				id: currentActiveNote.id,
@@ -59,6 +59,7 @@ const NoteEditor: React.FC<Props> = ({ setIsEditable }) => {
 			addNote(currentNote);
 		}
 		setIsEditable(false);
+		fetchNotes(String(userId));
 		setCurrentNote({
 			id: "",
 			title: "",
@@ -66,11 +67,10 @@ const NoteEditor: React.FC<Props> = ({ setIsEditable }) => {
 			updated_at: "",
 			userId: "",
 		});
-		fetchNotes(String(userId));
 	};
 	return (
 		<Box sx={{ display: "flex", flexDirection: "column", height: "100%" }}>
-			<Box
+			<Button
 				onClick={handleSave}
 				sx={{
 					fontSize: "14px",
@@ -79,10 +79,12 @@ const NoteEditor: React.FC<Props> = ({ setIsEditable }) => {
 					textTransform: "uppercase",
 					mb: "15px",
 					padding: "6px",
+					cursor: "pointer",
+					width: "70px",
 				}}
 			>
 				Save
-			</Box>
+			</Button>
 			<Box
 				sx={{
 					padding: "10px",
